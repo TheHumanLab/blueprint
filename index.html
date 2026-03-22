@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE HUMAN LAB | TENSION SCAN [THL-SYS-02]</title>
     <style>
         :root {
@@ -12,68 +13,132 @@
         body {
             background-color: var(--concrete);
             color: var(--shadow);
-            font-family: 'Courier New', Courier, monospace; /* Lab/Technical feel */
+            font-family: 'Courier New', Courier, monospace;
             text-transform: uppercase;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
         #lab-container {
             border: 2px solid var(--shadow);
             padding: 40px;
-            max-width: 600px;
+            width: 100%;
+            max-width: 650px;
             background: white;
-            box-shadow: 20px 20px 0px var(--lab-grey); /* Hard brutalist shadow */
+            box-shadow: 20px 20px 0px var(--lab-grey);
         }
-        h1 { font-size: 1.2rem; border-bottom: 2px solid var(--shadow); padding-bottom: 10px; }
-        .diagnostic-step { margin-bottom: 30px; }
-        input[type=range] { width: 100%; cursor: crosshair; }
+        h1 { font-size: 1.1rem; border-bottom: 2px solid var(--shadow); padding-bottom: 10px; margin-bottom: 20px; letter-spacing: 1px; }
+        .objective { font-size: 0.85rem; margin-bottom: 30px; color: var(--lab-grey); }
+        .step { margin-bottom: 25px; }
+        label { display: block; font-size: 0.8rem; margin-bottom: 10px; font-weight: bold; }
+        input[type=range] { 
+            width: 100%; 
+            cursor: crosshair; 
+            accent-color: var(--shadow);
+        }
+        .scale-labels { display: flex; justify-content: space-between; font-size: 0.6rem; margin-top: 5px; color: #888; }
         .btn {
             background: var(--shadow);
             color: white;
-            padding: 15px 30px;
+            padding: 18px;
             border: none;
             cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             width: 100%;
             margin-top: 20px;
+            letter-spacing: 2px;
+            transition: 0.2s;
         }
         .btn:hover { background: var(--lab-grey); }
-        .result-box { display: none; margin-top: 20px; border-top: 2px solid var(--shadow); }
+        .result-box { display: none; margin-top: 20px; border-top: 2px solid var(--shadow); padding-top: 20px; }
+        #archetype-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; display: block; }
+        #archetype-desc { font-size: 0.85rem; line-height: 1.4; margin-bottom: 25px; }
+        .required-reading { background: #eeeeee; padding: 15px; border-left: 5px solid var(--shadow); font-size: 0.8rem; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div id="lab-container">
     <h1>INSTRUMENT: TENSION SCAN [THL-SYS-02]</h1>
-    <p>OBJECTIVE: IDENTIFY INTERNAL LOAD-BEARING FAILURE POINTS.</p>
+    <p class="objective">OBJECTIVE: IDENTIFY INTERNAL LOAD-BEARING FAILURE POINTS.</p>
     
     <div id="scan-form">
-        <div class="diagnostic-step">
-            <label>01: OSCILLATION RATE (EXPANSION VS WITHDRAWAL)</label>
-            <input type="range" min="1" max="10" value="5">
+        <div class="step">
+            <label>01: OSCILLATION RATE (STABILITY VS SWINGS)</label>
+            <input type="range" class="q-val" min="1" max="10" value="5">
+            <div class="scale-labels"><span>LOW SWING</span><span>HIGH OSCILLATION</span></div>
         </div>
-        <!-- Additional questions here -->
+
+        <div class="step">
+            <label>02: LATERAL DISPLACEMENT (CRISIS STABILITY)</label>
+            <input type="range" class="q-val" min="1" max="10" value="5">
+            <div class="scale-labels"><span>HOLDS CENTER</span><span>STRUCTURAL SHIFT</span></div>
+        </div>
+
+        <div class="step">
+            <label>03: BEAM FATIGUE (DECISION ANXIETY)</label>
+            <input type="range" class="q-val" min="1" max="10" value="5">
+            <div class="scale-labels"><span>STRATEGIC</span><span>SURVIVAL MODE</span></div>
+        </div>
+
+        <div class="step">
+            <label>04: FOUNDATION DEPTH (CHILDHOOD LOGIC)</label>
+            <input type="range" class="q-val" min="1" max="10" value="5">
+            <div class="scale-labels"><span>UPDATED</span><span>OUTDATED/ROOTED</span></div>
+        </div>
+
+        <div class="step">
+            <label>05: COMPRESSION (NEW VARIABLE CAPACITY)</label>
+            <input type="range" class="q-val" min="1" max="10" value="5">
+            <div class="scale-labels"><span>READY</span><span>AT BREAKING POINT</span></div>
+        </div>
+
         <button class="btn" onclick="runAnalysis()">RUN STRUCTURAL ANALYSIS</button>
     </div>
 
     <div id="results" class="result-box">
-        <h2>DIAGNOSTIC COMPLETE</h2>
-        <p id="archetype-result"></p>
-        <p id="next-action" style="background: #eee; padding: 10px; border-left: 5px solid var(--shadow);">
+        <span id="archetype-title"></span>
+        <p id="archetype-desc"></p>
+        
+        <div class="required-reading">
             <strong>REQUIRED READING:</strong> PART TWO: STRUCTURAL LOAD-BEARING.
-        </p>
-        <a href="[LINK_TO_BOOK]" class="btn" style="text-decoration:none; display:block; text-align:center;">ACCESS THE BLUEPRINT</a>
+        </div>
+        
+        <a href="https://humanlabofficial.com" id="cta-link" class="btn" style="text-decoration:none; display:block; text-align:center;">ACCESS THE BLUEPRINT</a>
     </div>
 </div>
 
 <script>
     function runAnalysis() {
+        const scores = document.querySelectorAll('.q-val');
+        let total = 0;
+        scores.forEach(s => total += parseInt(s.value));
+
+        let title = "";
+        let desc = "";
+
+        if (total <= 15) {
+            title = "STRUCTURAL CATEGORY: THE HOLLOW SHELL";
+            desc = "YOUR INTERNAL STRUCTURE IS UNDER-UTILIZED. THERE IS NO TENSION BECAUSE THERE IS NO LOAD. YOU ARE OPERATING IN A PRE-LOGIC STATE. GROWTH REQUIRES THE IMMEDIATE INTRODUCTION OF SYSTEMIC WEIGHT.";
+        } else if (total <= 30) {
+            title = "STRUCTURAL CATEGORY: THE OSCILLATING CABLE";
+            desc = "YOU ARE HIGHLY FLEXIBLE BUT LACK A RIGID FOUNDATION. YOU MOVE CONSTANTLY WITHOUT ADVANCING. YOUR ENERGY IS DISSIPATING THROUGH LATERAL MOVEMENT RATHER THAN VERTICAL LIFT.";
+        } else if (total <= 43) {
+            title = "STRUCTURAL CATEGORY: THE BRITTLE MONOLITH";
+            desc = "HIGH SUCCESS. HIGH TENSION. YOUR INTERNAL BEAMS ARE OPERATING AT 90%+ CAPACITY. YOU ARE ONE UNEXPECTED VARIABLE AWAY FROM SYSTEMIC COLLAPSE. YOUR CURRENT LOGIC CANNOT SUPPORT FURTHER HEIGHT.";
+        } else {
+            title = "STRUCTURAL CATEGORY: RED-LINE LIMIT";
+            desc = "CRITICAL FAILURE IMMINENT. YOUR LOAD-BEARING CAPACITY HAS BEEN EXCEEDED. INTERNAL FRACTURES ARE ALREADY PRESENT IN YOUR DECISION-MAKING LOGIC. IMMEDIATE ARCHITECTURAL INTERVENTION REQUIRED.";
+        }
+
         document.getElementById('scan-form').style.display = 'none';
         document.getElementById('results').style.display = 'block';
-        document.getElementById('archetype-result').innerText = "STRUCTURAL CATEGORY: BRITTLE MONOLITH. YOUR INTERNAL BEAMS ARE OPERATING AT 94% TENSION CAPACITY. COLLAPSE IS A LOGICAL NECESSITY WITHOUT RE-ARCHITECTURE.";
+        document.getElementById('archetype-title').innerText = title;
+        document.getElementById('archetype-desc').innerText = desc;
     }
 </script>
 
